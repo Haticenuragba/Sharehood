@@ -1,5 +1,6 @@
 package com.sustainablefood.com;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -7,10 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -30,6 +34,7 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.sustainablefood.com.Tasks.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements
     private MapboxMap mapboxMap;
     private MapView mapView;
     private MarkerViewManager markerViewManager;
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
 
     @Override
@@ -198,5 +204,23 @@ public class MainActivity extends AppCompatActivity implements
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int i = item.getItemId();
+        if(i==R.id.action_settings) {
+            firebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            SessionManager sessionManager = new SessionManager(this);
+            sessionManager.logout();
+            startActivity(intent);
+        }
+
+        return true;
     }
 }
