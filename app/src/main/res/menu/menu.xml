@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-
     <item
-
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:id="@+id/action_logout"
+        android:orderInCategory="102"
         android:title="Logout"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        />
+    <item
+        app:showAsAction="always"
+        android:icon="@drawable/ic_notifications_whitte_24dp"
+        android:id="@+id/action_notification"
+        android:orderInCategory="101"
+        android:title="Notifications"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         />
 </menu>

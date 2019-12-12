@@ -213,7 +213,14 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int i = item.getItemId();
-        if(i==R.id.action_settings) {
+        if(i==R.id.action_logout) {
+            firebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            SessionManager sessionManager = new SessionManager(this);
+            sessionManager.logout();
+            startActivity(intent);
+        }
+        else if(i==R.id.action_notification) {
             firebaseAuth.getInstance().signOut();
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             SessionManager sessionManager = new SessionManager(this);
@@ -222,5 +229,10 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         return true;
+    }
+
+    public void goToAddLocation(View view) {
+        Intent intent = new Intent(MainActivity.this, AddLocationActivity.class);
+        startActivity(intent);
     }
 }

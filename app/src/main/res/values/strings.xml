@@ -10,4 +10,17 @@
     <string name="username">Username</string>
     <string name="login">Login</string>
     <string name="sharehood">Sharehood</string>
+    <string name="your_notes_for_your_dear_guest">Your notes for your dear guest :)</string>
+    <string name="name_of_food">Name of food</string>
+    <string name="i_am_done">Done!</string>
+    <string name="phone_number">Phone Number</string>
+    <string-array name="category_array">
+        <item>Choose Food Category</item>
+        <item>Meal</item>
+        <item>Dairy Product</item>
+        <item>Fruit &amp; Vegetable</item>
+        <item>Bevarage</item>
+        <item>Bread &amp; Pastry</item>
+        <item>Dessert</item>
+    </string-array>
 </resources>

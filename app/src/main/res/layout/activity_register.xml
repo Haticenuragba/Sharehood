@@ -23,6 +23,29 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <EditText
+        android:id="@+id/signup_activity_phone"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginHorizontal="36dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/white"
+        android:drawableLeft="@drawable/ic_local_phone_white_24dp"
+        android:drawablePadding="8dp"
+        android:hint="@string/phone_number"
+        android:imeOptions="actionNext"
+        android:inputType="phone"
+        android:lines="1"
+        android:outlineAmbientShadowColor="@color/white"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="@color/white"
+        android:textColorHighlight="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <ImageView
        android:outlineSpotShadowColor="@color/black"
@@ -43,7 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:layout_marginHorizontal="36dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/white"
         android:drawableLeft="@drawable/ic_man_user"
         android:drawablePadding="8dp"
@@ -60,7 +83,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/signup_activity_phone" />
 
     <EditText
         android:id="@+id/signup_activity_email"
@@ -136,18 +159,20 @@
 
     <Button
         android:id="@+id/signup_activity_register"
-        android:background="@color/colorPrimaryDark"
-        android:textColor="@color/white"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginHorizontal="36dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimaryDark"
         android:text="@string/register"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signup_activity_verify_password" />
+        app:layout_constraintTop_toBottomOf="@+id/signup_activity_verify_password"
+        app:layout_constraintVertical_bias="0.048" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

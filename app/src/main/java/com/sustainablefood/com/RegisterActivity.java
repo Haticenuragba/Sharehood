@@ -20,26 +20,33 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText editEmail;
+    private EditText editName;
+    private EditText editPhone;
     private EditText editPassword;
     private EditText editPasswordVerify;
     private Button btnRegister;
 
-    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference userReference;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
-
+        firebaseAuth = FirebaseAuth.getInstance();
+        editName = findViewById(R.id.signup_activity_username);
         editEmail = findViewById(R.id.signup_activity_email);
         editPassword = findViewById(R.id.signup_activity_password);
         editPasswordVerify = findViewById(R.id.signup_activity_verify_password);
+        editPhone = findViewById(R.id.signup_activity_phone);
         btnRegister = findViewById(R.id.signup_activity_register);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +60,8 @@ public class RegisterActivity extends AppCompatActivity {
     private void register() {
         if (editEmail.getText().toString().equalsIgnoreCase("")
                 || editPassword.getText().toString().equalsIgnoreCase("")
+                || editName.getText().toString().equalsIgnoreCase("")
+                || editPhone.getText().toString().equalsIgnoreCase("")
                 || editPasswordVerify.getText().toString().equalsIgnoreCase("")) {
             Toast.makeText(RegisterActivity.this, "Please fill empty fields", Toast.LENGTH_SHORT).show();
             return;
@@ -70,7 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
                 .show();
 
         Task<AuthResult> task =
-                mFirebaseAuth.createUserWithEmailAndPassword(editEmail.getText().toString(), editPassword.getText().toString());
+                firebaseAuth.createUserWithEmailAndPassword(editEmail.getText().toString(), editPassword.getText().toString());
         task.addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -87,6 +96,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 }
                             })
                             .show();
+                    userReference =  firebaseDatabase.getReference("User").child(task.getResult().getUser().getUid());
+                    userReference.child("name").setValue(editName.getText().toString());
+                    userReference.child("phone").setValue(editPhone.getText().toString());
                 } else {
                     try {
                         throw task.getException();
