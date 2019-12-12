@@ -17,6 +17,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -85,8 +88,18 @@ public class RegisterActivity extends AppCompatActivity {
                             })
                             .show();
                 } else {
-
-                    Toast.makeText(RegisterActivity.this, "An error occured", Toast.LENGTH_SHORT).show();
+                    try {
+                        throw task.getException();
+                    } catch(FirebaseAuthWeakPasswordException e) {
+                        Toast.makeText(getApplicationContext(), "Password is not strong enough", Toast.LENGTH_SHORT).show();
+                    } catch(FirebaseAuthInvalidCredentialsException e) {
+                        Toast.makeText(getApplicationContext(), "Invalid email address", Toast.LENGTH_SHORT).show();
+                    } catch(FirebaseAuthUserCollisionException e) {
+                        Toast.makeText(getApplicationContext(), "User is already registered", Toast.LENGTH_SHORT).show();
+                    } catch(Exception e) {
+                        Log.v("firebase eror" , e.toString());
+                        Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
