@@ -3,4 +3,10 @@
     <string name="mapbox_access_token">pk.eyJ1IjoiaGF0aWNlbnVyYWdiYSIsImEiOiJjazQyY3BrY2IwNDUzM21vZnU5N3B1OGd2In0.Y0SNpCUqzfrsia0hJ4M3KA</string>
     <string name="user_location_permission_explanation">Give permission for location</string>
     <string name="user_location_permission_not_granted">Permission could not be taken</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="verify_password">Verify Password</string>
+    <string name="register">Register</string>
+    <string name="username">Username</string>
+    <string name="verify_password">Verify Password</string>
 </resources>

@@ -1,13 +1,22 @@
 package com.sustainablefood.com;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
@@ -18,8 +27,14 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
+import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * Use the LocationComponent to easily add a device location "puck" to a Mapbox map.
@@ -30,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+    private MarkerViewManager markerViewManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +86,21 @@ public class MainActivity extends AppCompatActivity implements
                         enableLocationComponent(style);
                     }
                 });
+
+        double latitude = 38.740615;
+        double longtitude = 35.477526;
+
+        MarkerViewManager markerViewManager = new MarkerViewManager(mapView, mapboxMap);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder);
+        bm = Bitmap.createScaledBitmap(bm, 120, 120, false);
+        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+        Icon icon = iconFactory.fromBitmap(bm);
+        
+        mapboxMap.addMarker(new MarkerOptions()
+        .position(new LatLng(latitude, longtitude))
+        .title("Deneme")
+        .icon(icon));
+
     }
 
     @SuppressWarnings( {"MissingPermission"})

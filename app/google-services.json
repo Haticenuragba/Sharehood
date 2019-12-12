@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "239274749542",
+    "firebase_url": "https://sharehood-70a99.firebaseio.com",
+    "project_id": "sharehood-70a99",
+    "storage_bucket": "sharehood-70a99.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239274749542:android:2f16151798f1f1703f07a7",
+        "android_client_info": {
+          "package_name": "com.sustainablefood.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "239274749542-3eags3vdbb38t1itcd3t3vfjfd4dga5o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2DmenUcqPy7fzocAwgz1wVSBe64WW_Qw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239274749542-3eags3vdbb38t1itcd3t3vfjfd4dga5o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
