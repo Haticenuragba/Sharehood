@@ -15,6 +15,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements
     private MapView mapView;
     private MarkerViewManager markerViewManager;
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference locationReference = firebaseDatabase.getReference("Location");
 
 
     @Override
@@ -93,11 +97,12 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 });
 
+
         double latitude = 38.740615;
         double longtitude = 35.477526;
 
         MarkerViewManager markerViewManager = new MarkerViewManager(mapView, mapboxMap);
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.fruit_marker);
         bm = Bitmap.createScaledBitmap(bm, 120, 120, false);
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
         Icon icon = iconFactory.fromBitmap(bm);
