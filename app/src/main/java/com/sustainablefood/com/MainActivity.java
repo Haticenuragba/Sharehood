@@ -1,5 +1,6 @@
 package com.sustainablefood.com;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,17 +12,26 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -36,6 +46,8 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerView;
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.squareup.picasso.Picasso;
+import com.sustainablefood.com.Objects.Location;
 import com.sustainablefood.com.Tasks.SessionManager;
 
 import java.util.ArrayList;
@@ -46,8 +58,10 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 /**
  * Use the LocationComponent to easily add a device location "puck" to a Mapbox map.
  */
+
+//TO-DO: Locationa username ve telefon eklenecek, markerlara click listener eklenecek.
 public class MainActivity extends AppCompatActivity implements
-        OnMapReadyCallback, PermissionsListener {
+        OnMapReadyCallback,  PermissionsListener{
 
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
@@ -56,6 +70,14 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference locationReference = firebaseDatabase.getReference("Location");
+
+    private View markerView;
+    private ImageView markerViewImage;
+    private TextView markerViewName;
+    private TextView markerViewNotes;
+    private TextView markerViewPhone;
+    private Button markerViewButton;
+    private FloatingActionButton floatingActionButton;
 
 
     @Override
@@ -69,9 +91,18 @@ public class MainActivity extends AppCompatActivity implements
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
 
+        markerView = findViewById(R.id.marker_view_layout_main);
+        markerViewImage = findViewById(R.id.activity_main_image);
+        markerViewName = findViewById(R.id.activity_main_username);
+        markerViewNotes = findViewById(R.id.activity_main_notes);
+        markerViewPhone = findViewById(R.id.activity_main_phone);
+        markerViewButton = findViewById(R.id.activity_main_button);
+        floatingActionButton = findViewById(R.id.floating_action_button);
+
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
     }
 
     @Override
@@ -89,6 +120,15 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
         mapboxMap.setCameraPosition(position);
 
+        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+            @Override
+            public boolean onMapClick(@NonNull LatLng point) {
+                floatingActionButton.show();
+                markerView.setVisibility(View.GONE);
+                return true;
+            }
+        });
+
         mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/mapbox/cjerxnqt3cgvp2rmyuxbeqme7"),
                 new Style.OnStyleLoaded() {
                     @Override
@@ -98,19 +138,80 @@ public class MainActivity extends AppCompatActivity implements
                 });
 
 
-        double latitude = 38.740615;
-        double longtitude = 35.477526;
+        locationReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount()!=0){
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        Location location = snapshot.getValue(Location.class);
+                        double latitude = location.latitude;
+                        double longtitude = location.longitude;
 
-        MarkerViewManager markerViewManager = new MarkerViewManager(mapView, mapboxMap);
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.fruit_marker);
-        bm = Bitmap.createScaledBitmap(bm, 120, 120, false);
-        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-        Icon icon = iconFactory.fromBitmap(bm);
-        
-        mapboxMap.addMarker(new MarkerOptions()
-        .position(new LatLng(latitude, longtitude))
-        .title("Deneme")
-        .icon(icon));
+                        int category = location.category;
+                        MarkerViewManager markerViewManager = new MarkerViewManager(mapView, mapboxMap);
+                        Bitmap bm;
+                        if(category == 5){
+                             bm = BitmapFactory.decodeResource(getResources(), R.drawable.bread_marker);
+                        }
+                        else if(category == 2){
+                             bm = BitmapFactory.decodeResource(getResources(), R.drawable.dairy_marker);
+                        }
+                        else if(category == 3){
+                             bm = BitmapFactory.decodeResource(getResources(), R.drawable.fruit_marker);
+                        }
+                        else if(category == 4){
+                             bm = BitmapFactory.decodeResource(getResources(), R.drawable.bavage_marker);
+                        }
+                        else{
+                             bm = BitmapFactory.decodeResource(getResources(), R.drawable.meal_marker);
+                        }
+
+                        bm = Bitmap.createScaledBitmap(bm, 120, 120, false);
+                        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+                        Icon icon = iconFactory.fromBitmap(bm);
+
+
+                        Marker marker = mapboxMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(latitude, longtitude))
+                                .title(snapshot.getKey())
+                                .icon(icon));
+
+
+                        mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+                            @Override
+                            public boolean onMarkerClick(@NonNull Marker marker) {
+                                String key = marker.getTitle();
+                                locationReference.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        Location location = dataSnapshot.getValue(Location.class);
+                                        markerViewName.setText(location.userName);
+                                        markerViewPhone.setText(location.userPhone);
+                                        markerViewNotes.setText(location.note);
+                                        Picasso.with(getApplicationContext()).load(location.image).into(markerViewImage);
+                                        markerView.setVisibility(View.VISIBLE);
+                                        floatingActionButton.hide();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                                return true;
+                            }
+                        });
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
@@ -240,4 +341,6 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(MainActivity.this, AddLocationActivity.class);
         startActivity(intent);
     }
+
+
 }

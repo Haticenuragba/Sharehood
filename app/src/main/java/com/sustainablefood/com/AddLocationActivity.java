@@ -38,8 +38,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -60,6 +63,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     private Button addLocationButton;
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference userReference = firebaseDatabase.getReference("User").child(firebaseAuth.getCurrentUser().getUid().toString());
     private DatabaseReference userLocationReference = firebaseDatabase.getReference("User")
             .child(firebaseAuth.getCurrentUser().getUid().toString()).child("Location")
             .child(locationId);
@@ -75,11 +79,28 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     private double longitude;
     private double latitude;
 
+    private String userName = "Unknown";
+    private String userPhone = "Unknown";
+    private String uid = firebaseAuth.getCurrentUser().getUid().toString();
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
+
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userName = dataSnapshot.child("name").getValue().toString();
+                userPhone = dataSnapshot.child("phone").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -131,7 +152,9 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
                 locationReference.child("food_name").setValue(nameOfFoodEdit.getText().toString());
                 locationReference.child("category").setValue(categoriesSpinner.getSelectedItemId());
                 locationReference.child("note").setValue(notesEdit.getText().toString());
-
+                locationReference.child("userName").setValue(userName);
+                locationReference.child("userPhone").setValue(userPhone);
+                locationReference.child("userId").setValue(uid);
                 uploadImage();
             }
             else{

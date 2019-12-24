@@ -14,6 +14,7 @@
     <string name="name_of_food">Name of food</string>
     <string name="i_am_done">Done!</string>
     <string name="phone_number">Phone Number</string>
+    <string name="i_am_coming">I am coming!</string>
     <string-array name="category_array">
         <item>Choose Food Category</item>
         <item>Meal</item>
