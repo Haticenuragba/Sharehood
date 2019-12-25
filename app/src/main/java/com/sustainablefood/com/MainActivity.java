@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -184,13 +185,26 @@ public class MainActivity extends AppCompatActivity implements
                                 locationReference.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        Location location = dataSnapshot.getValue(Location.class);
-                                        markerViewName.setText(location.userName);
-                                        markerViewPhone.setText(location.userPhone);
-                                        markerViewNotes.setText(location.note);
-                                        Picasso.with(getApplicationContext()).load(location.image).into(markerViewImage);
+                                        final Location selectedLocation = dataSnapshot.getValue(Location.class);
+                                        markerViewName.setText(selectedLocation.userName);
+                                        markerViewPhone.setText(selectedLocation.userPhone);
+                                        markerViewNotes.setText(selectedLocation.note);
+                                        Picasso.with(getApplicationContext()).load(selectedLocation.image).into(markerViewImage);
                                         markerView.setVisibility(View.VISIBLE);
                                         floatingActionButton.hide();
+
+                                        if(!selectedLocation.userId.equals(firebaseAuth.getCurrentUser().getUid().toString())) {
+                                            markerViewButton.setVisibility(View.VISIBLE);
+                                            markerViewButton.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    Toast.makeText(getApplicationContext(), selectedLocation.userId, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+                                        else{
+                                            markerViewButton.setVisibility(View.GONE);
+                                        }
                                     }
 
                                     @Override
