@@ -15,6 +15,10 @@
     <string name="i_am_done">Done!</string>
     <string name="phone_number">Phone Number</string>
     <string name="i_am_coming">I am coming!</string>
+    <string name="guest_s_name">Guest\'s Name</string>
+    <string name="contact_number">Contact Number</string>
+    <string name="host_name">Host\'s Name</string>
+    <string name="notifications">Notifications</string>
     <string-array name="category_array">
         <item>Choose Food Category</item>
         <item>Meal</item>

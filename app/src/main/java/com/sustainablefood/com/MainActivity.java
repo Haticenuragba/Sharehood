@@ -339,12 +339,10 @@ public class MainActivity extends AppCompatActivity implements
             SessionManager sessionManager = new SessionManager(this);
             sessionManager.logout();
             startActivity(intent);
+            finish();
         }
         else if(i==R.id.action_notification) {
-            firebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            SessionManager sessionManager = new SessionManager(this);
-            sessionManager.logout();
+            Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
             startActivity(intent);
         }
 
