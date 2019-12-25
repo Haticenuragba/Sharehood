@@ -49,9 +49,12 @@ import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.squareup.picasso.Picasso;
 import com.sustainablefood.com.Objects.Location;
+import com.sustainablefood.com.Objects.Notification;
 import com.sustainablefood.com.Tasks.SessionManager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference locationReference = firebaseDatabase.getReference("Location");
+    private DatabaseReference userReference = firebaseDatabase.getReference("User").child(firebaseAuth.getCurrentUser().getUid().toString());
 
     private View markerView;
     private ImageView markerViewImage;
@@ -144,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getChildrenCount()!=0){
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                        Location location = snapshot.getValue(Location.class);
+                        final Location location = snapshot.getValue(Location.class);
                         double latitude = location.latitude;
                         double longtitude = location.longitude;
 
@@ -195,10 +199,32 @@ public class MainActivity extends AppCompatActivity implements
 
                                         if(!selectedLocation.userId.equals(firebaseAuth.getCurrentUser().getUid().toString())) {
                                             markerViewButton.setVisibility(View.VISIBLE);
-                                            markerViewButton.setOnClickListener(new View.OnClickListener() {
+                                            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
-                                                public void onClick(View view) {
-                                                    Toast.makeText(getApplicationContext(), selectedLocation.userId, Toast.LENGTH_SHORT).show();
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    String id = firebaseAuth.getCurrentUser().getUid() + System.nanoTime();
+                                                    DatabaseReference hostReference = firebaseDatabase.getReference("User")
+                                                            .child(location.userId).child("Notification").child(id);
+
+                                                    hostReference.child("id").setValue(id);
+                                                    hostReference.child("name").setValue(dataSnapshot.child("name").getValue());
+                                                    hostReference.child("phone").setValue(dataSnapshot.child("phone").getValue());
+                                                    hostReference.child("image").setValue(location.image);
+                                                    hostReference.child("status").setValue(0);
+                                                    hostReference.child("guestId").setValue(firebaseAuth.getCurrentUser().getUid());
+
+                                                    DatabaseReference guestReference = userReference.child("Notification").child(id);
+                                                    guestReference.child("id").setValue(id);
+                                                    guestReference.child("name").setValue(location.userName);
+                                                    guestReference.child("phone").setValue(location.userPhone);
+                                                    guestReference.child("image").setValue(location.image);
+                                                    guestReference.child("status").setValue(1);
+                                                    guestReference.child("guestId").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
                                                 }
                                             });
                                         }
