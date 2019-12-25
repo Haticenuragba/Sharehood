@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements
                 });
 
 
-        locationReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        locationReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getChildrenCount()!=0){
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements
                              bm = BitmapFactory.decodeResource(getResources(), R.drawable.meal_marker);
                         }
 
-                        bm = Bitmap.createScaledBitmap(bm, 120, 120, false);
+                        bm = Bitmap.createScaledBitmap(bm, 160, 160, false);
                         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
                         Icon icon = iconFactory.fromBitmap(bm);
 
