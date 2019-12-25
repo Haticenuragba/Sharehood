@@ -40,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
         android:hint="@string/name_of_food"
-        android:lines="1"
         android:imeOptions="actionNext"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
