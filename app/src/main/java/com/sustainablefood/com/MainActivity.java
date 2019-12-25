@@ -1,6 +1,8 @@
 package com.sustainablefood.com;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements
     private Button markerViewButton;
     private FloatingActionButton floatingActionButton;
 
+    private ArrayList<Marker> markerList = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements
         locationReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(Marker marker: markerList){
+                    marker.remove();
+                }
                 if(dataSnapshot.getChildrenCount()!=0){
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                         final Location location = snapshot.getValue(Location.class);
@@ -181,6 +187,8 @@ public class MainActivity extends AppCompatActivity implements
                                 .title(snapshot.getKey())
                                 .icon(icon));
 
+                        markerList.add(marker);
+
 
                         mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                             @Override
@@ -189,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements
                                 locationReference.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        final String locationId = dataSnapshot.getKey();
                                         final Location selectedLocation = dataSnapshot.getValue(Location.class);
                                         markerViewName.setText(selectedLocation.userName);
                                         markerViewPhone.setText(selectedLocation.userPhone);
@@ -199,34 +208,56 @@ public class MainActivity extends AppCompatActivity implements
 
                                         if(!selectedLocation.userId.equals(firebaseAuth.getCurrentUser().getUid().toString())) {
                                             markerViewButton.setVisibility(View.VISIBLE);
-                                            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            markerViewButton.setOnClickListener(new View.OnClickListener() {
                                                 @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    String id = firebaseAuth.getCurrentUser().getUid() + System.nanoTime();
-                                                    DatabaseReference hostReference = firebaseDatabase.getReference("User")
-                                                            .child(location.userId).child("Notification").child(id);
+                                                public void onClick(View view) {
+                                                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            String id = firebaseAuth.getCurrentUser().getUid() + locationId;
+                                                            DatabaseReference hostReference = firebaseDatabase.getReference("User")
+                                                                    .child(selectedLocation.userId).child("Notification").child(id);
 
-                                                    hostReference.child("id").setValue(id);
-                                                    hostReference.child("name").setValue(dataSnapshot.child("name").getValue());
-                                                    hostReference.child("phone").setValue(dataSnapshot.child("phone").getValue());
-                                                    hostReference.child("image").setValue(location.image);
-                                                    hostReference.child("status").setValue(0);
-                                                    hostReference.child("guestId").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                            hostReference.child("id").setValue(id);
+                                                            hostReference.child("name").setValue(dataSnapshot.child("name").getValue());
+                                                            hostReference.child("phone").setValue(dataSnapshot.child("phone").getValue());
+                                                            hostReference.child("image").setValue(selectedLocation.image);
+                                                            hostReference.child("status").setValue(0);
+                                                            hostReference.child("locationId").setValue(locationId);
+                                                            hostReference.child("guestId").setValue(firebaseAuth.getCurrentUser().getUid());
 
-                                                    DatabaseReference guestReference = userReference.child("Notification").child(id);
-                                                    guestReference.child("id").setValue(id);
-                                                    guestReference.child("name").setValue(location.userName);
-                                                    guestReference.child("phone").setValue(location.userPhone);
-                                                    guestReference.child("image").setValue(location.image);
-                                                    guestReference.child("status").setValue(1);
-                                                    guestReference.child("guestId").setValue(firebaseAuth.getCurrentUser().getUid());
-                                                }
+                                                            DatabaseReference guestReference = userReference.child("Notification").child(id);
+                                                            guestReference.child("id").setValue(id);
+                                                            guestReference.child("name").setValue(selectedLocation.userName);
+                                                            guestReference.child("phone").setValue(selectedLocation.userPhone);
+                                                            guestReference.child("image").setValue(selectedLocation.image);
+                                                            guestReference.child("status").setValue(1);
+                                                            guestReference.child("locationId").setValue(locationId);
+                                                            guestReference.child("guestId").setValue(firebaseAuth.getCurrentUser().getUid());
 
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                            new AlertDialog.Builder(MainActivity.this)
+                                                                    .setTitle("That's it!")
+                                                                    .setMessage("You can check your notifications for approval")
+                                                                    .setNeutralButton("GO TO NOTIFICATIONS", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+                                                                            startActivity(intent);
+                                                                        }
+                                                                    })
+                                                                    .show();
+                                                            markerView.setVisibility(View.GONE);
+                                                            floatingActionButton.show();
+                                                        }
 
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
                                                 }
                                             });
+
                                         }
                                         else{
                                             markerViewButton.setVisibility(View.GONE);

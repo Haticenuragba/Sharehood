@@ -6,6 +6,7 @@ public class Notification {
     public String phone;
     public String image;
     public String guestId;
+    public String locationId;
     public int status;
 
     public boolean isReceived(){
